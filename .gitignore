@@ -1,0 +1,52 @@
+# Qt / CLion build directories
+cmake-build-*/
+build-*/
+debug-*/
+release-*/
+
+# Qt Creator files
+*.pro.user
+*.pro.user.*
+*.creator
+*.creator.user
+*.user
+*.user.*
+*.autosave
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+
+# Binaries / object files
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# Fuzzer output files
+*.log
+*.seed
+*.corpus
+*.state
+
+# Qt moc / ui / qrc generated files
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# Editor / OS temp files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.idea/
+
+# ClangFormat cache (optional)
+.clang-format.bak
