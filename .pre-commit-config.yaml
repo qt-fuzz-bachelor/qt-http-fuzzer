@@ -1,0 +1,30 @@
+# top-level settings (optional)
+fail_fast: false
+
+repos:
+  # C/C++ tools collection
+  - repo: https://github.com/pocc/pre-commit-hooks
+    rev: v1.3.5   # or a specific tag/commit
+    hooks:
+      - id: clang-format
+        args: [--style=file]       # use your .clang-format
+      - id: cppcheck               # static analyzer
+      - id: cpplint                # style checks
+
+  # Basic useful hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+
+  # Commit message conventional format
+  - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
+    rev: v9.24.0
+    hooks:
+      - id: commitlint
+        stages: [commit-msg]
+        args: ["--edit"]
+        additional_dependencies:
+          - "@commitlint/config-conventional"
