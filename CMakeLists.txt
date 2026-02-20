@@ -9,7 +9,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # AFL
-add_subdirectory(src/AFLPlussPluss)
+# add_subdirectory(src/AFLPlussPluss)
 
-#LibFuzzer
-#add_subdirectory(src/LibFuzzer)
+# LibFuzzer
+# add_subdirectory(src/LibFuzzer)
+
+# WinAFL
+# add_subdirectory(src/WinAFL)
