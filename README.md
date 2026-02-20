@@ -16,8 +16,15 @@ brew install pre-commit cpplint cppcheck npm
 npm install --save-dev @commitlint/cli @commitlint/config-conventional
 ```
 #### On Windows:
+Commands are ment to be ran in a PowerShell terminal
 1. **Install Python**
-   Download and install [Python](https://www.python.org/downloads/windows/), which includes `pip`.
+```bash
+winget install Python.Python.3.14
+```
+&nbsp; Which includes `pip`, which we will use later. <br>
+&nbsp; Find module path, should be somewhere around `C:\Users\Username\Appadata\Local\Python\PythonCore-version\Scripts` <br>
+&nbsp; Add it as an environment variable to the System Variable **Path**, this lets us run module commands in the terminal. <br>
+&nbsp; Re-open the terminal so the changes take effect.
 
 2. **Install Node.js**
    Download and install [Node.js](https://nodejs.org/), which provides `npm`.
@@ -27,7 +34,7 @@ npm install --save-dev @commitlint/cli @commitlint/config-conventional
 ```bash
 pip install pre-commit cpplint
 npm install -g commitlint @commitlint/config-conventional
-choco install cppcheck
+winget install cppcheck.cppcheck
 ```
 
 #### On Ubuntu/Linux:
