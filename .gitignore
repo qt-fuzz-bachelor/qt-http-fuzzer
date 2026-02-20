@@ -50,3 +50,8 @@ Thumbs.db
 
 # ClangFormat cache (optional)
 .clang-format.bak
+package-lock.json
+package.json
+
+# Node modules
+node_modules/
