@@ -16,7 +16,8 @@ set(FUZZ_FLAGS
         -g
 )
 
-add_executable(fuzz fuzz.cpp)
+add_executable(fuzz fuzz.cpp
+        fuzz.cpp)
 
 # Apply fuzz flags *to this target only*
 target_compile_options(fuzz PRIVATE ${FUZZ_FLAGS})

@@ -8,4 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Optional but very common for fuzzing
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_subdirectory(src)
+# AFL
+add_subdirectory(src/AFLPlussPluss)
+
+#LibFuzzer
+#add_subdirectory(src/LibFuzzer)
