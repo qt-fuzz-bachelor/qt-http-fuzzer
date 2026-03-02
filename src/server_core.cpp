@@ -22,10 +22,11 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
-static QHttpServer *server = nullptr;    // Pointer to the QHttpServer instance
-static QTcpServer *tcpserver = nullptr;  // Underlying TCP server
-static quint16 serverPort = 0;           // Port assigned by QTcpServer
-static bool initialized = false;  // Whether the server has been initialized
+namespace {
+QHttpServer *server = nullptr;    // Pointer to the QHttpServer instance
+QTcpServer *tcpserver = nullptr;  // Underlying TCP server
+quint16 serverPort = 0;           // Port assigned by QTcpServer
+bool initialized = false;         // Whether the server has been initialized
 
 /**
  * @brief Initializes a local QHttpServer instance for fuzzing.
@@ -37,7 +38,7 @@ static bool initialized = false;  // Whether the server has been initialized
  *
  * Only meant to be used internally within this file.
  */
-static void initializeServer() {
+void initializeServer() {
   if (initialized)
     return;  // Avoid re-initializing
 
@@ -71,6 +72,7 @@ static void initializeServer() {
   // Optional debug info
   qDebug() << "Server started on port" << serverPort;
 }
+}  // namespace
 
 /**
  * @brief Sends raw input bytes to the local QHttpServer for black-box fuzzing.
