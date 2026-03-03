@@ -154,8 +154,7 @@ bool fuzzServerBlackbox(const char *file_path) {
   sock.flush();
 
   // Let QHttpServer process the request
-  while (QCoreApplication::hasPendingEvents())
-    QCoreApplication::processEvents(QEventLoop::AllEvents);
+  QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
 
   // Disconnect gracefully
   sock.disconnectFromHost();
