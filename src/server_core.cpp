@@ -108,7 +108,8 @@ bool fuzzServerBlackbox(const uint8_t *data, size_t size) {
   sock.flush();
 
   // Let QHttpServer process the request
-  QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+  while (QCoreApplication::hasPendingEvents())
+    QCoreApplication::processEvents(QEventLoop::AllEvents);
 
   // Disconnect gracefully
   sock.disconnectFromHost();
