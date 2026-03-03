@@ -14,11 +14,11 @@
 
 #include "server_core.h"  // NOLINT(build/include_subdir)
 #include <QCoreApplication>
-#include <QDebug>
 #include <QEventLoop>
-#include <QHostAddress>
+#include <QFile>
 #include <QHttpServer>
 #include <QHttpServerResponse>
+#include <QIODevice>
 #include <QTcpServer>
 #include <QTcpSocket>
 
@@ -104,6 +104,53 @@ bool fuzzServerBlackbox(const uint8_t *data, size_t size) {
 
   // Send raw bytes over TCP
   sock.write(reinterpret_cast<const char *>(data), size);
+  sock.flush();
+
+  // Let QHttpServer process the request
+  QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+
+  // Disconnect gracefully
+  sock.disconnectFromHost();
+  sock.waitForDisconnected(10);
+
+  return true;
+}
+
+/**
+ * @brief Reads input from a file and sends its contents to the local
+ *        QHttpServer for black-box fuzzing.
+ *
+ * If the server isn't initialized yet, it will be initialized automatically.
+ * The file specified by @p file_path is opened in read-only mode and its
+ * entire contents are transmitted over a QTcpSocket connection to the server.
+ *
+ * The maximum time waited for the TCP connection and disconnection is limited
+ * to 10 milliseconds to keep fuzzing iterations fast.
+ *
+ * @param file_path Path to the input file containing fuzz data.
+ * @return true if the file was successfully read and the data sent,
+ *         false otherwise.
+ */
+bool fuzzServerBlackbox(const char *file_path) {
+  // Ensure server is initialized
+  if (!initialized)
+    initializeServer();
+
+  QFile f(file_path);
+  if (!f.open(QIODevice::ReadOnly))
+    return false;
+
+  QTcpSocket sock;
+  sock.connectToHost(QHostAddress::LocalHost, serverPort);
+
+  // Give up if unable to connect
+  if (!sock.waitForConnected(10)) {
+    qDebug() << "Failed to connect to server";
+    return false;
+  }
+
+  // Send raw bytes from file over TCP
+  sock.write(f.readAll());
   sock.flush();
 
   // Let QHttpServer process the request
