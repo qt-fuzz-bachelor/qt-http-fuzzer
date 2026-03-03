@@ -94,10 +94,6 @@ bool fuzzServerBlackbox(const uint8_t *data, size_t size) {
   if (!initialized)
     initializeServer();
 
-  // Skip empty or huge inputs
-  if (size == 0 || size > 64 * 1024)
-    return false;
-
   QTcpSocket sock;
   sock.connectToHost(QHostAddress::LocalHost, serverPort);
 

@@ -67,12 +67,7 @@ bool fuzzParserOnly(const uint8_t *data, size_t size) {
   if (!initialized)
     initializeApplication();
 
-  // Skip empty or huge inputs
-  if (size == 0 || size > 64 * 1024)
-    return false;
-
   QHttpServerRequestFilter filter;
-
   QHttpServerParser parser{QHostAddress{}, 8080, QHostAddress{}, 8080, &filter};
 
   // Inject raw bytes into a buffer
