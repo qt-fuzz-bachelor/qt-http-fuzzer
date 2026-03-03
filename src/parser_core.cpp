@@ -15,33 +15,10 @@
 #include "parser_core.h"  // NOLINT(build/include_subdir)
 #include <QBuffer>
 #include <QByteArray>
-#include <QCoreApplication>
 #include <QDebug>
 #include <QHostAddress>
 #include <QtHttpServer/private/qhttpserverparser_p.h>
 #include <QtHttpServer/private/qhttpserverrequestfilter_p.h>
-
-namespace {
-bool initialized = false;  // Whether the application has been initialized
-
-/**
- * @brief Initializes QCoreApplication for this translation unit.
- *
- * Ensures that Qt internals (event loop, sockets, etc.) can be used.
- * This is safe to call multiple times; it will only initialize once.
- */
-void initializeApplication() {
-  if (initialized)
-    return;  // Avoid re-initializing
-
-  // Qt application must live for program lifetime
-  int argc = 0;
-  char **argv = nullptr;
-  new QCoreApplication(argc, argv);
-
-  initialized = true;
-}
-}  // namespace
 
 /**
  * @brief Fuzzes the QHttpServer parser with raw input bytes.
@@ -52,21 +29,17 @@ void initializeApplication() {
  * fuzzing or unit testing malformed or unexpected HTTP input.
  *
  * @param data Pointer to a buffer containing raw input bytes to parse.
- * @param size Size of the input buffer in bytes. Inputs of 0 bytes or
- *             larger than 64 KB are ignored and result in `false`.
+ * @param size Size of the input buffer in bytes.
  *
  * @return `true` if the parser successfully processed the input, `false`
- *         if parsing failed, the input was empty/too large, or a QBuffer
+ *         if parsing failed or a QBuffer
  *         could not be opened.
  *
  * @note This function does not modify any external state. Logging is done
  *       using qDebug/qCritical, which can be enabled or disabled as needed.
  */
 bool fuzzParserOnly(const uint8_t *data, size_t size) {
-  // Ensure server is initialized
-  if (!initialized)
-    initializeApplication();
-
+  // Create filter and parser
   QHttpServerRequestFilter filter;
   QHttpServerParser parser{QHostAddress{}, 8080, QHostAddress{}, 8080, &filter};
 
