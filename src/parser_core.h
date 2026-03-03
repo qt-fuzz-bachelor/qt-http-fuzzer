@@ -21,14 +21,13 @@
  *
  * This function feeds raw input bytes to a QHttpServerParser instance
  * using a QBuffer. It allows testing or fuzzing the parser without
- * starting a full HTTP server. Inputs that are empty or exceed 64 KB
- * are ignored.
+ * starting a full HTTP server.
  *
  * @param data Pointer to the input buffer containing raw bytes.
  * @param size Size of the input buffer in bytes.
  *
- * @return `true` if parsing succeeded, `false` if parsing failed, the
- *         input was invalid, or the buffer could not be opened.
+ * @return `true` if parsing succeeded, `false` if parsing failed or the buffer
+ * could not be opened.
  *
  * @note This function does not modify any external state. Logging
  *       is optional and can be enabled for debugging purposes.

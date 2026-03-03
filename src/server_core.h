@@ -19,8 +19,7 @@
 /**
  * @brief Sends raw bytes to a local QHttpServer for fuzzing.
  *
- * The server is automatically initialized on the first call. Inputs of
- * 0 bytes or larger than 64 KB are ignored.
+ * The server is automatically initialized on the first call.
  *
  * @param data Pointer to raw input bytes.
  * @param size Number of bytes in the input buffer.

@@ -85,8 +85,7 @@ void initializeServer() {
  * to 10 milliseconds to keep fuzzing iterations fast.
  *
  * @param data Pointer to raw input bytes to send.
- * @param size Number of bytes in the input buffer. Inputs of 0 or >64 KB are
- * ignored.
+ * @param size Number of bytes in the input buffer.
  * @return true if the data was successfully sent, false otherwise.
  */
 bool fuzzServerBlackbox(const uint8_t *data, size_t size) {
