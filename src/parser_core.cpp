@@ -16,7 +16,9 @@
 #include <QBuffer>
 #include <QByteArray>
 #include <QDebug>
+#include <QFile>
 #include <QHostAddress>
+#include <QIODevice>
 #include <QtHttpServer/private/qhttpserverparser_p.h>
 #include <QtHttpServer/private/qhttpserverrequestfilter_p.h>
 
@@ -39,7 +41,6 @@
  *       using qDebug/qCritical, which can be enabled or disabled as needed.
  */
 bool fuzzParserOnly(const uint8_t *data, size_t size) {
-  // Create filter and parser
   QHttpServerRequestFilter filter;
   QHttpServerParser parser{QHostAddress{}, 8080, QHostAddress{}, 8080, &filter};
 
@@ -47,6 +48,46 @@ bool fuzzParserOnly(const uint8_t *data, size_t size) {
   QByteArray byteArray{reinterpret_cast<const char *>(data),
                        static_cast<int>(size)};
   QBuffer buffer{&byteArray};
+  if (!buffer.open(QBuffer::ReadOnly)) {
+    qCritical() << "Failed to open QBuffer";
+    return false;
+  }
+
+  // Parse the raw bytes
+  bool result = parser.parse(&buffer);
+
+  if (!result) {
+    // Optional: logging during unit tests
+    qDebug() << "Parser failed on input of size" << size;
+  }
+
+  return result;
+}
+
+/**
+ * @brief Fuzzes the QHttpServer parser with raw input read from a file.
+ *
+ * This function reads the entire content of the given file into a QBuffer
+ * and feeds it to a temporary QHttpServerParser instance. It is useful
+ * for fuzzing or testing the parser against stored input files.
+ *
+ * @param file_path Path to the file containing raw input bytes.
+ * @return true if the parser successfully processed the input, false
+ *         if parsing failed or the file/QBuffer could not be opened.
+ *
+ * @note Logging is performed via qDebug/qCritical. This function does not
+ *       modify any external state.
+ */
+bool fuzzParserOnly(const char *file_path) {
+  QHttpServerRequestFilter filter;
+  QHttpServerParser parser{QHostAddress{}, 8080, QHostAddress{}, 8080, &filter};
+
+  QFile f(file_path);
+  if (!f.open(QIODevice::ReadOnly))
+    return false;
+
+  // Inject raw bytes from file into a buffer
+  QBuffer buffer{f.readAll()};
   if (!buffer.open(QBuffer::ReadOnly)) {
     qCritical() << "Failed to open QBuffer";
     return false;
