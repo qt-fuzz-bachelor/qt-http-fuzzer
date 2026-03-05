@@ -15,6 +15,7 @@
  */
 
 #include "server_core.h"  // NOLINT(build/include_subdir)
+#include <iostream>       // NOLINT(build/include_order)
 #include <windows.h>      // NOLINT(build/include_order)
 
 /**
@@ -58,7 +59,7 @@ extern "C" __declspec(dllexport) __declspec(noinline) int target(char *f_path) {
 int main(int argc, char **argv) {
   // Check if at least one argument (input file) is provided
   if (argc < 2) {
-    qInfo() << "Usage:" << argv[0] << "<input file> [loop]";
+    std::cout << "Usage:" << argv[0] << "<input file> [loop]";
     return 0;
   }
 
