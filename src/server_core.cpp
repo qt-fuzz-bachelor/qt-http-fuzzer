@@ -111,7 +111,10 @@ bool fuzzServerBlackbox(const uint8_t *data, size_t size) {
 
   // Disconnect gracefully
   sock.disconnectFromHost();
-  sock.waitForDisconnected(10);
+  if (sock.state() == QTcpSocket::UnconnectedState ||
+      sock.waitForDisconnected(50)) {
+    qDebug("Disconnected");
+  }
 
   return true;
 }
@@ -158,7 +161,9 @@ bool fuzzServerBlackbox(const char *file_path) {
 
   // Disconnect gracefully
   sock.disconnectFromHost();
-  sock.waitForDisconnected(10);
-
+  if (sock.state() == QTcpSocket::UnconnectedState ||
+      sock.waitForDisconnected(50)) {
+    qDebug("Disconnected");
+  }
   return true;
 }
