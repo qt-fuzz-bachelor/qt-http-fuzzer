@@ -34,11 +34,11 @@ endif()
 
 message(STATUS "Using fuzzing engine: ${FUZZER_ENGINE}")
 
-add_executable(fuzz_server_${FUZZER_ENGINE}
-        fuzz_server_${FUZZER_ENGINE}.cpp
+add_executable(fuzz_parser_${FUZZER_ENGINE}
+        fuzz_parser_${FUZZER_ENGINE}.cpp
 )
 
-target_link_libraries(fuzz_server_${FUZZER_ENGINE}
+target_link_libraries(fuzz_parser_${FUZZER_ENGINE}
         PRIVATE
         fuzzer_core
 )
@@ -48,7 +48,7 @@ if(FUZZER_ENGINE STREQUAL "afl")
         set(AFL_NO_FORKSRV 1)
         set(MallocNanoZone 0)
 
-        set_target_properties(fuzz_server_${FUZZER_ENGINE} PROPERTIES
+        set_target_properties(fuzz_parser_${FUZZER_ENGINE} PROPERTIES
                 MACOSX_RPATH TRUE
                 BUILD_RPATH "@executable_path/../Frameworks"
         )
@@ -61,8 +61,8 @@ if(FUZZER_ENGINE STREQUAL "afl")
             -g
     )
 
-    target_compile_options(fuzz_server_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
-    target_link_options(fuzz_server_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
+    target_compile_options(fuzz_parser_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
+    target_link_options(fuzz_parser_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
 elseif(FUZZER_ENGINE STREQUAL "libfuzzer")
     set(FUZZ_FLAGS
             -fsanitize=fuzzer,address,undefined
@@ -71,6 +71,6 @@ elseif(FUZZER_ENGINE STREQUAL "libfuzzer")
             -g
     )
 
-    target_compile_options(fuzz_server_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
-    target_link_options(fuzz_server_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
+    target_compile_options(fuzz_parser_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
+    target_link_options(fuzz_parser_${FUZZER_ENGINE} PRIVATE ${FUZZ_FLAGS})
 endif()
