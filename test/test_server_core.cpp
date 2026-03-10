@@ -2,7 +2,7 @@
 // Copyright (c) 2026 T.W. Skårer, J.F. Wilvang, S. Thire
 // SPDX-License-Identifier: MIT
 //
-// Testing the Server Core
+// Testing Server Core
 //
 
 #include <QObject>
@@ -19,6 +19,8 @@ private slots:  // NOLINT(whitespace/indent)
   void testServerInitialization();
   void testBasicHttpRequest();
   void testEmptyData();
+  void testMalformedRequest();
+  void testNonExistentFile();
 };
 
 /**
@@ -63,6 +65,13 @@ void TestServerCore::testEmptyData() {
   QVERIFY(result);
 }
 
-QTEST_MAIN(TestServerCore);
+void TestServerCore::testMalformedRequest() {
+  const char *malformedRequest = "GET\r\n\r\nHTTP/42\r\n";
+  bool result =
+      fuzzServerBlackbox(reinterpret_cast<const uint8_t *>(malformedRequest),
+                         strlen(malformedRequest));
+  QVERIFY(result);
+}
 
+QTEST_MAIN(TestServerCore);
 #include "test_server_core.moc"
