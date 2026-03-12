@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+include(CTest)
+enable_testing()
+
 # ---- Fuzzing engine selection ----
 set(FUZZER_ENGINE "" CACHE STRING "Choose fuzzing engine")
 
@@ -36,3 +39,4 @@ message(STATUS "Using fuzzing engine: ${FUZZER_ENGINE}")
 # ---- Subprojects ----
 add_subdirectory(src)
 add_subdirectory(harness)
+add_subdirectory(test)
