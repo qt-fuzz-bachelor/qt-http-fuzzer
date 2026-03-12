@@ -27,4 +27,18 @@
  */
 bool fuzzServerBlackbox(const uint8_t *data, size_t size);
 
+/**
+ * @brief Reads input from a file and sends its contents to a local QHttpServer
+ *        for fuzzing.
+ *
+ * The server is automatically initialized on the first call. The file specified
+ * by @p file_path is opened in read-only mode, and its entire contents are
+ * transmitted over a QTcpSocket connection to the server.
+ *
+ * @param file_path Path to the input file containing fuzz data.
+ * @return true if the file was successfully read and the data sent, false
+ *         otherwise.
+ */
+bool fuzzServerBlackbox(const char *file_path);
+
 #endif  // SRC_SERVER_CORE_H_

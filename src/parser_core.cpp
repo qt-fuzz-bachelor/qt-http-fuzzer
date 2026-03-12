@@ -87,19 +87,12 @@ bool fuzzParserOnly(const char *file_path) {
     return false;
 
   // Inject raw bytes from file into a buffer
-  QBuffer buffer{f.readAll()};
+  QByteArray byteArray = f.readAll();
+  QBuffer buffer{&byteArray};
   if (!buffer.open(QBuffer::ReadOnly)) {
     qCritical() << "Failed to open QBuffer";
     return false;
   }
 
-  // Parse the raw bytes
-  bool result = parser.parse(&buffer);
-
-  if (!result) {
-    // Optional: logging during unit tests
-    qDebug() << "Parser failed on input of size" << size;
-  }
-
-  return result;
+  return parser.parse(&buffer);
 }

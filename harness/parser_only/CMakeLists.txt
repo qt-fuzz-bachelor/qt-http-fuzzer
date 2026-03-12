@@ -1,5 +1,5 @@
 # harnesses/parser_only/CMakeLists.txt
-set(FUZZ_TARGET "fuzz_server_${FUZZER_ENGINE}")
+set(FUZZ_TARGET "fuzz_parser_${FUZZER_ENGINE}")
 
 add_executable(${FUZZ_TARGET}
         ${FUZZ_TARGET}.cpp
@@ -17,11 +17,11 @@ set(COMMON_FLAGS
 # Engine-specific flags
 set(FUZZ_FLAGS "")
 if(FUZZER_ENGINE STREQUAL "afl")
-    if(NOT WIN32)  # AFL flags only apply on non-Windows
-        set(FUZZ_FLAGS "${COMMON_FLAGS} \ -fsanitize=address")
+    if(NOT WIN32)  # AFL flags only on UNIX/macOS
+        set(FUZZ_FLAGS -fsanitize=address -fno-omit-frame-pointer -O1 -g)
     endif()
 elseif(FUZZER_ENGINE STREQUAL "libfuzzer")
-    set(FUZZ_FLAGS "${COMMON_FLAGS} \ -fsanitize=fuzzer,address,undefined")
+    set(FUZZ_FLAGS -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -O1 -g)
 endif()
 
 # Platform-specific tweaks
