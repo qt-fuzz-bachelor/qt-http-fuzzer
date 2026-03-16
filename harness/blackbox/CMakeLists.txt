@@ -18,7 +18,7 @@ set(COMMON_FLAGS
 set(FUZZ_FLAGS "")
 if(FUZZER_ENGINE STREQUAL "afl")
     if(NOT WIN32)  # AFL flags only apply on non-Windows
-        set(FUZZ_FLAGS "${COMMON_FLAGS} \ -fsanitize=address")
+        set(FUZZ_FLAGS ${COMMON_FLAGS} -fsanitize=address)
     endif()
 elseif(FUZZER_ENGINE STREQUAL "libfuzzer")
     set(FUZZ_FLAGS "${COMMON_FLAGS} \ -fsanitize=fuzzer,address,undefined")
