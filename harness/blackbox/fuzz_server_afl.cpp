@@ -15,8 +15,10 @@
  */
 
 #include "server_core.h"  // NOLINT(build/include_subdir)
-#include <stdint.h>       // NOLINT(build/include_order)
-#include <unistd.h>       // NOLINT(build/include_order)
+
+extern "C" {
+#include <afl-fuzz.h>  // NOLINT(build/include_order)
+}
 
 /**
  * @brief AFL++ fuzzing main entry point.
