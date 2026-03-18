@@ -1,0 +1,195 @@
+# =========================
+# Request line (core paths)
+# =========================
+"GET / HTTP/1.1"
+"POST / HTTP/1.1"
+"GET /index.html HTTP/1.0"
+"OPTIONS * HTTP/1.1"
+"CONNECT example.com:80 HTTP/1.1"
+
+# spacing / parsing edge cases
+"GET  /  HTTP/1.1"
+"GET\t/\tHTTP/1.1"
+"GET / HTTP/1.1\r"
+"GET / HTTP/1.1\n"
+"GET / HTTP/1.1\r\n"
+
+# =========================
+# Methods (including edge)
+# =========================
+"GET"
+"POST"
+"PUT"
+"DELETE"
+"PATCH"
+"OPTIONS"
+"HEAD"
+"TRACE"
+"CONNECT"
+
+# WebDAV / uncommon (parser stress)
+"PROPFIND"
+"PROPPATCH"
+"MKCOL"
+"COPY"
+"MOVE"
+"LOCK"
+"UNLOCK"
+"REPORT"
+"MERGE"
+"CHECKOUT"
+"CHECKIN"
+
+# HTTP/2 preface (important edge)
+"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
+
+# =========================
+# HTTP versions
+# =========================
+"HTTP/1.0"
+"HTTP/1.1"
+"HTTP/0.9"
+"HTTP/2.0"
+"HTTP/1.1\x00"
+
+# =========================
+# Headers (normalized format)
+# =========================
+"Host:"
+"User-Agent:"
+"Accept:"
+"Content-Type:"
+"Content-Length:"
+"Transfer-Encoding:"
+"Connection:"
+"Cookie:"
+"Set-Cookie:"
+"Authorization:"
+"Cache-Control:"
+"Range:"
+"Referer:"
+"Origin:"
+"Upgrade:"
+"TE:"
+"Trailer:"
+
+# proxy / real-world attack surface
+"X-Forwarded-For:"
+"X-Forwarded-Host:"
+"X-Forwarded-Proto:"
+"X-Http-Method-Override:"
+
+# =========================
+# Header formatting edge cases
+# =========================
+"Host: example.com"
+"Host:example.com"
+"Host : example.com"
+"Host:\texample.com"
+"Host: example.com\r\n"
+
+# duplicate headers (important!)
+"Host: a\r\nHost: b"
+
+# =========================
+# CRLF / delimiters
+# =========================
+"\r\n"
+"\r\n\r\n"
+"\n"
+"\r"
+
+# =========================
+# Content-Length edge cases
+# =========================
+"Content-Length: 0"
+"Content-Length: 1"
+"Content-Length: -1"
+"Content-Length: 10"
+"Content-Length: 99999999999999999999"
+"Content-Length: 18446744073709551615"
+
+# conflicting length headers (CRITICAL)
+"Content-Length: 10\r\nContent-Length: 20"
+
+# =========================
+# Transfer-Encoding (smuggling bugs)
+# =========================
+"Transfer-Encoding: chunked"
+"Transfer-Encoding: identity"
+
+# CL + TE conflicts (high-value)
+"Content-Length: 10\r\nTransfer-Encoding: chunked"
+"Transfer-Encoding: chunked\r\nContent-Length: 10"
+
+# =========================
+# Chunked encoding edge cases
+# =========================
+"0\r\n\r\n"
+"1\r\na\r\n0\r\n\r\n"
+"FFFFFFFF\r\n"
+"-1\r\n"
+
+# =========================
+# Connection behaviors
+# =========================
+"keep-alive"
+"close"
+"Upgrade"
+"h2"
+"h2c"
+
+# =========================
+# Encodings / compression
+# =========================
+"gzip"
+"deflate"
+"identity"
+
+# =========================
+# Auth / cookies
+# =========================
+"Basic"
+"Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=="
+"session="
+"Cookie: session=abc"
+
+# =========================
+# Paths / traversal
+# =========================
+"/"
+"/index.html"
+"../"
+"/../"
+"/./"
+"///"
+
+# =========================
+# Binary / encoding edge cases
+# =========================
+"\x00"
+"\x0D\x0A"
+"%00"
+"%20"
+"%2E"
+
+# =========================
+# Numbers (overflow / limits)
+# =========================
+"0"
+"-1"
+"2147483647"
+"-2147483648"
+"4294967295"
+"9223372036854775807"
+"-9223372036854775808"
+
+# =========================
+# Misc structured values
+# =========================
+"text/plain"
+"text/html"
+"application/x-www-form-urlencoded"
+"chunked"
+"bytes=0-100"
+"Tue, 15 Nov 1994 08:12:31 GMT"
