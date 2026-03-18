@@ -18,6 +18,7 @@ class TestParserCore : public QObject {
 private slots:  // NOLINT(whitespace/indent)
   void testValidHttpRequestBytes();
   void testMustFail();
+  void testRandome();
 };
 
 /**
@@ -46,6 +47,21 @@ void TestParserCore::testMustFail() {
   const bool result = fuzzParserOnly(
       reinterpret_cast<const uint8_t *>(httpRequest), std::strlen(httpRequest));
   QVERIFY(!result);
+}
+
+/**
+ * @brief Test the parser on a randome string
+ *
+ *  The parser returns true and does not encounter
+ *  a condition it classifies as an error.
+ */
+void TestParserCore::testRandome() {
+  const char *httpRequest = "42123456789abcdHEIPÅDEG";
+
+  const bool result = fuzzParserOnly(
+      reinterpret_cast<const uint8_t *>(httpRequest), std::strlen(httpRequest));
+
+  QVERIFY(result);
 }
 
 QTEST_APPLESS_MAIN(TestParserCore)
