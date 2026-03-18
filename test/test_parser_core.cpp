@@ -17,6 +17,7 @@ class TestParserCore : public QObject {
   // Tells Qt it is a signal/slot mechanism
 private slots:  // NOLINT(whitespace/indent)
   void testValidHttpRequestBytes();
+  void testMustFail();
 };
 
 /**
@@ -31,6 +32,20 @@ void TestParserCore::testValidHttpRequestBytes() {
       reinterpret_cast<const uint8_t *>(httpRequest), std::strlen(httpRequest));
 
   QVERIFY(result);
+}
+
+/**
+ * @brief Verifies that the HTTP parser rejects an invalid request-line.
+ *
+ * This test ensures that QHttpServerParser::parse() returns false when the
+ * request-line contains an invalid protocol/version token.
+ */
+void TestParserCore::testMustFail() {
+  const char *httpRequest = "GET / HTTX/1.1\r\n"
+                            "\r\n";
+  const bool result = fuzzParserOnly(
+      reinterpret_cast<const uint8_t *>(httpRequest), std::strlen(httpRequest));
+  QVERIFY(!result);
 }
 
 QTEST_APPLESS_MAIN(TestParserCore)
