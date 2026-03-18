@@ -7,21 +7,23 @@ add_executable(${FUZZ_TARGET}
 
 target_link_libraries(${FUZZ_TARGET} PRIVATE fuzzer_core)
 
-# Common flags for engines that support them
-set(COMMON_FLAGS
-        -fno-omit-frame-pointer
-        -O1
-        -g
-)
-
 # Engine-specific flags
-set(FUZZ_FLAGS "")
 if(FUZZER_ENGINE STREQUAL "afl")
-    if(NOT WIN32)  # AFL flags only on UNIX/macOS
-        set(FUZZ_FLAGS -fsanitize=address -fno-omit-frame-pointer -O1 -g)
+    if(NOT WIN32)  # AFL flags only apply on non-Windows
+        set(FUZZ_FLAGS
+                -fsanitize=address
+                -fno-omit-frame-pointer
+                -O1
+                -g
+        )
     endif()
 elseif(FUZZER_ENGINE STREQUAL "libfuzzer")
-    set(FUZZ_FLAGS -fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -O1 -g)
+    set(FUZZ_FLAGS
+            -fsanitize=fuzzer,address,undefined
+            -fno-omit-frame-pointer
+            -O1
+            -g
+    )
 endif()
 
 # Platform-specific tweaks
