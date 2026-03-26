@@ -65,6 +65,51 @@ bool fuzzParserOnly(const uint8_t *data, size_t size) {
 }
 
 /**
+ * @brief Fuzzes the QHttpHeaderParser with raw input bytes.
+ *
+ * This function creates a temporary QHttpHeaderParser instance and injects
+ * the provided raw input data into it using a QBuffer. It allows testing
+ * the header parser in isolation from the full HTTP server, which is useful
+ * for fuzzing or unit testing malformed or unexpected HTTP header input.
+ *
+ * @param data Pointer to a buffer containing raw input bytes to parse.
+ * @param size Size of the input buffer in bytes.
+ *
+ * @return `true` if the parser successfully processed the input, `false`
+ *         if parsing failed, the input size exceeded the supported range,
+ *         or a QBuffer could not be opened.
+ *
+ * @note This function does not modify any external state. Logging is done
+ *       using qDebug/qCritical, which can be enabled or disabled as needed.
+ */
+bool fuzzHeaderParserOnly(const uint8_t *data, size_t size) {
+  // Make sure all the input is possible to use and won't be truncated
+  if (size > std::numeric_limits<int>::max())
+    return false;
+
+  QHttpHeaderParser parser;
+
+  // Inject raw bytes into a buffer
+  QByteArray byteArray(reinterpret_cast<const char *>(data),
+                       static_cast<int>(size));
+  QBuffer buffer(&byteArray);
+  if (!buffer.open(QBuffer::ReadOnly)) {
+    qCritical() << "Failed to open QBuffer";
+    return false;
+  }
+
+  // Parse the raw bytes
+  bool result = parser.ParseHeaders(&buffer);
+
+  if (!result) {
+    // Optional: logging during unit tests
+    qDebug() << "Parser failed on input of size" << size;
+  }
+
+  return result;
+}
+
+/**
  * @brief Fuzzes the QHttpServer parser with raw input read from a file.
  *
  * This function reads the entire content of the given file into a QBuffer

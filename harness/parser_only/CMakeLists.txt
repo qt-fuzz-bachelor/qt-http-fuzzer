@@ -9,6 +9,9 @@ target_link_libraries(${FUZZ_TARGET} PRIVATE fuzzer_core)
 
 # Engine-specific flags
 if(FUZZER_ENGINE STREQUAL "afl")
+    add_executable(fuzz_header_parser_afl
+        fuzz_header_parser_afl.cpp
+    )
     if(NOT WIN32)  # AFL flags only apply on non-Windows
         set(FUZZ_FLAGS
                 -fsanitize=address
