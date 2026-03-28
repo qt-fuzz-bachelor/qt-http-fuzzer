@@ -21,6 +21,7 @@
 #include <QIODevice>
 #include <QtHttpServer/private/qhttpserverparser_p.h>
 #include <QtHttpServer/private/qhttpserverrequestfilter_p.h>
+#include <QtNetwork/private/qhttpheaderparser_p.h>
 
 /**
  * @brief Fuzzes the QHttpServer parser with raw input bytes.
@@ -83,26 +84,18 @@ bool fuzzParserOnly(const uint8_t *data, size_t size) {
  *       using qDebug/qCritical, which can be enabled or disabled as needed.
  */
 bool fuzzHeaderParserOnly(const uint8_t *data, size_t size) {
-  // Make sure all the input is possible to use and won't be truncated
   if (size > std::numeric_limits<int>::max())
     return false;
 
   QHttpHeaderParser parser;
 
-  // Inject raw bytes into a buffer
   QByteArray byteArray(reinterpret_cast<const char *>(data),
                        static_cast<int>(size));
-  QBuffer buffer(&byteArray);
-  if (!buffer.open(QBuffer::ReadOnly)) {
-    qCritical() << "Failed to open QBuffer";
-    return false;
-  }
 
-  // Parse the raw bytes
-  bool result = parser.ParseHeaders(&buffer);
+  // Directly pass a view of the data
+  bool result = parser.parseHeaders(QByteArrayView(byteArray));
 
   if (!result) {
-    // Optional: logging during unit tests
     qDebug() << "Parser failed on input of size" << size;
   }
 

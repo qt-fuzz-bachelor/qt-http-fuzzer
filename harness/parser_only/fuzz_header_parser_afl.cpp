@@ -15,10 +15,7 @@
  */
 
 #include "parser_core.h"  // NOLINT(build/include_subdir)
-
-extern "C" {
-#include <afl-fuzz.h>  // NOLINT(build/include_order)
-}
+#include <unistd.h>       // NOLINT(build/include_order)
 
 /**
  * @brief AFL++ fuzzing main entry point.
@@ -36,6 +33,7 @@ extern "C" {
  *       server stack for testing malformed or unexpected input.
  */
 int main() {
+  __AFL_FUZZ_INIT();
   const unsigned char *buf = __AFL_FUZZ_TESTCASE_BUF;
 
   while (__AFL_LOOP(1000)) {
