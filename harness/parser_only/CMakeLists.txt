@@ -1,5 +1,9 @@
 # harnesses/parser_only/CMakeLists.txt
-set(FUZZ_TARGET "fuzz_parser_${FUZZER_ENGINE}")
+if (HEADER)
+    set(FUZZ_TARGET "fuzz_header_parser_${FUZZER_ENGINE}")
+else ()
+    set(FUZZ_TARGET "fuzz_parser_${FUZZER_ENGINE}")
+endif ()
 
 add_executable(${FUZZ_TARGET}
         ${FUZZ_TARGET}.cpp
@@ -9,9 +13,6 @@ target_link_libraries(${FUZZ_TARGET} PRIVATE fuzzer_core)
 
 # Engine-specific flags
 if(FUZZER_ENGINE STREQUAL "afl")
-    add_executable(fuzz_header_parser_afl
-        fuzz_header_parser_afl.cpp
-    )
     if(NOT WIN32)  # AFL flags only apply on non-Windows
         set(FUZZ_FLAGS
                 -fsanitize=address
