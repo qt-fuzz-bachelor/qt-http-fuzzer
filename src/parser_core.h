@@ -35,6 +35,26 @@
 bool fuzzParserOnly(const uint8_t *data, size_t size);
 
 /**
+ * @brief Fuzzes the QHttpHeaderParser with raw input bytes.
+ *
+ * This function creates a temporary QHttpHeaderParser instance and injects
+ * the provided raw input data into it using a QBuffer. It allows testing
+ * the header parser in isolation from the full HTTP server, which is useful
+ * for fuzzing or unit testing malformed or unexpected HTTP header input.
+ *
+ * @param data Pointer to a buffer containing raw input bytes to parse.
+ * @param size Size of the input buffer in bytes.
+ *
+ * @return `true` if the parser successfully processed the input, `false`
+ *         if parsing failed, the input size exceeded the supported range,
+ *         or a QBuffer could not be opened.
+ *
+ * @note This function does not modify any external state. Logging is done
+ *       using qDebug/qCritical, which can be enabled or disabled as needed.
+ */
+bool fuzzHeaderParserOnly(const uint8_t *data, size_t size);
+
+/**
  * @brief Fuzzes the HTTP parser in isolation using a file.
  *
  * This function reads input from a file and feeds its contents to a
