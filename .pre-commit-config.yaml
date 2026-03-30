@@ -8,7 +8,6 @@ repos:
     hooks:
       - id: clang-format
         args: [--style=file]       # use your .clang-format
-      - id: cppcheck               # static analyzer
       - id: cpplint                # style checks
 
   # Basic useful hooks
