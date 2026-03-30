@@ -5,11 +5,10 @@
 // Testing Server Core
 //
 
-#include <QObject>
-#include <QString>
-#include <QtTest/QTest>
-
-#include "../src/server_core.h"
+#include "server_core.h"  // NOLINT(build/include_subdir)
+#include <QObject>        // NOLINT(build/include_order)
+#include <QString>        // NOLINT(build/include_order)
+#include <QtTest/QTest>   // NOLINT(build/include_order)
 
 class TestServerCore : public QObject {
   Q_OBJECT
