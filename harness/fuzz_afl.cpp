@@ -34,7 +34,7 @@ int main() {
   __AFL_FUZZ_INIT();
   const unsigned char *buf = __AFL_FUZZ_TESTCASE_BUF;
 
-  while (__AFL_LOOP(1000)) {
+  while (__AFL_LOOP(1)) {
     int len = __AFL_FUZZ_TESTCASE_LEN;
 
     // Skip empty or huge inputs
