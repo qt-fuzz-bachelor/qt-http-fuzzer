@@ -15,7 +15,6 @@
  */
 
 #include "parser_core.h"  // NOLINT(build/include_subdir)
-#include <stdint.h>       // NOLINT(build/include_order)
 #include <unistd.h>       // NOLINT(build/include_order)
 
 /**
@@ -27,24 +26,25 @@
  *
  * @return Always returns 0.
  *
- * @note The buffer `data` is reused across AFL iterations. Each iteration is
+ * @note The buffer `buf` is reused across AFL iterations. Each iteration is
  *       forked by AFL, ensuring no side effects between runs.
  * @note The fuzzing process directly targets the HTTP parser by passing the raw
  *       input data to `fuzzParserOnly`, isolating the parser from the full HTTP
  *       server stack for testing malformed or unexpected input.
  */
 int main() {
-  uint8_t data[65536];
+  __AFL_FUZZ_INIT();
+  const unsigned char *buf = __AFL_FUZZ_TESTCASE_BUF;
 
   while (__AFL_LOOP(1000)) {
-    const size_t size = read(0, data, sizeof(data));
+    int len = __AFL_FUZZ_TESTCASE_LEN;
 
     // Skip empty or huge inputs
-    if (size <= 0 || size > 64 * 1024)
+    if (len <= 0 || len > 64 * 1024)
       continue;
 
     // Inject the fuzzed payload to the HTTP server
-    fuzzParserOnly(data, size);
+    fuzzParserOnly(buf, static_cast<size_t>(len));
   }
   return 0;
 }
