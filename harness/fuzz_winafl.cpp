@@ -41,7 +41,7 @@ extern "C" __declspec(dllexport) __declspec(noinline) int target(char *f_path) {
   fuzzHeaderParserOnly(f_path);
 #else
 #error "No fuzzing mode defined! Please define one of " \
-"FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
+       "FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
 #endif
   return 0;
 }
