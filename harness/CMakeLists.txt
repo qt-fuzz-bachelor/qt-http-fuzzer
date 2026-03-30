@@ -2,6 +2,7 @@
 option(FUZZ_HTTP_SERVER "Enable HTTP server fuzzing" OFF)
 option(FUZZ_HTTP_PARSER "Enable HTTP parser fuzzing" OFF)
 option(FUZZ_HEADER_PARSER "Enable HTTP header parser fuzzing" OFF)
+option(USE_ASAN "Enable AddressSanitizer (ASAN)" OFF)
 
 # Determine which fuzz mode was selected
 if(FUZZ_HTTP_SERVER)
