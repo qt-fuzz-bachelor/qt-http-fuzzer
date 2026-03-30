@@ -32,7 +32,24 @@
  * @note This function does not modify any external state. Logging
  *       is optional and can be enabled for debugging purposes.
  */
-bool fuzzParserOnly(const uint8_t *data, size_t size);
+bool fuzzHttpParserOnly(const uint8_t *data, size_t size);
+
+/**
+ * @brief Fuzzes the HTTP parser in isolation using a file.
+ *
+ * This function reads input from a file and feeds its contents to a
+ * QHttpServerParser instance using a QBuffer. It allows testing or
+ * fuzzing the parser without starting a full HTTP server.
+ *
+ * @param file_path Path to the input file containing raw fuzz data.
+ *
+ * @return `true` if parsing succeeded, `false` if parsing failed or the file
+ * could not be opened.
+ *
+ * @note This function does not modify any external state. Logging
+ *       is optional and can be enabled for debugging purposes.
+ */
+bool fuzzHttpParserOnly(const char *file_path);
 
 /**
  * @brief Fuzzes the QHttpHeaderParser with raw input bytes.
@@ -55,11 +72,12 @@ bool fuzzParserOnly(const uint8_t *data, size_t size);
 bool fuzzHeaderParserOnly(const uint8_t *data, size_t size);
 
 /**
- * @brief Fuzzes the HTTP parser in isolation using a file.
+ * @brief Fuzzes the header parser in isolation using a file
  *
- * This function reads input from a file and feeds its contents to a
- * QHttpServerParser instance using a QBuffer. It allows testing or
- * fuzzing the parser without starting a full HTTP server.
+ * This function creates a temporary QHttpHeaderParser instance and injects
+ * the provided raw input data into it using a QBuffer. It allows testing
+ * the header parser in isolation from the full HTTP server, which is useful
+ * for fuzzing or unit testing malformed or unexpected HTTP header input.
  *
  * @param file_path Path to the input file containing raw fuzz data.
  *
@@ -69,6 +87,6 @@ bool fuzzHeaderParserOnly(const uint8_t *data, size_t size);
  * @note This function does not modify any external state. Logging
  *       is optional and can be enabled for debugging purposes.
  */
-bool fuzzParserOnly(const char *file_path);
+bool fuzzHeaderParserOnly(const char *file_path);
 
 #endif  // SRC_PARSER_CORE_H_
