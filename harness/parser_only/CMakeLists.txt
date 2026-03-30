@@ -1,5 +1,9 @@
 # harnesses/parser_only/CMakeLists.txt
-set(FUZZ_TARGET "fuzz_parser_${FUZZER_ENGINE}")
+if (HEADER)
+    set(FUZZ_TARGET "fuzz_header_parser_${FUZZER_ENGINE}")
+else ()
+    set(FUZZ_TARGET "fuzz_parser_${FUZZER_ENGINE}")
+endif ()
 
 add_executable(${FUZZ_TARGET}
         ${FUZZ_TARGET}.cpp
