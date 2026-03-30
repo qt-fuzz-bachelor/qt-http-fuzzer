@@ -15,9 +15,7 @@
 #include "parser_core.h"  // NOLINT(build/include_subdir)
 #include <QBuffer>
 #include <QByteArray>
-#include <QDebug>
 #include <QFile>
-#include <QHostAddress>
 #include <QIODevice>
 #include <QtHttpServer/private/qhttpserverparser_p.h>
 #include <QtHttpServer/private/qhttpserverrequestfilter_p.h>
@@ -41,7 +39,7 @@
  * @note This function does not modify any external state. Logging is done
  *       using qDebug/qCritical, which can be enabled or disabled as needed.
  */
-bool fuzzParserOnly(const uint8_t *data, size_t size) {
+bool fuzzHttpParserOnly(const uint8_t *data, size_t size) {
   QHttpServerRequestFilter filter;
   QHttpServerParser parser{QHostAddress{}, 8080, QHostAddress{}, 8080, &filter};
 
@@ -50,23 +48,47 @@ bool fuzzParserOnly(const uint8_t *data, size_t size) {
                        static_cast<int>(size)};
   QBuffer buffer{&byteArray};
   if (!buffer.open(QBuffer::ReadOnly)) {
-    qCritical() << "Failed to open QBuffer";
     return false;
   }
 
   // Parse the raw bytes
-  bool result = parser.parse(&buffer);
-
-  if (!result) {
-    // Optional: logging during unit tests
-    qDebug() << "Parser failed on input of size" << size;
-  }
-
-  return result;
+  return parser.parse(&buffer);
 }
 
 /**
- * @brief Fuzzes the QHttpHeaderParser with raw input bytes.
+ * @brief Fuzzes the QHttpServer parser with raw input read from a file.
+ *
+ * This function reads the entire content of the given file into a QBuffer
+ * and feeds it to a temporary QHttpServerParser instance. It is useful
+ * for fuzzing or testing the parser against stored input files.
+ *
+ * @param file_path Path to the file containing raw input bytes.
+ * @return true if the parser successfully processed the input, false
+ *         if parsing failed or the file/QBuffer could not be opened.
+ *
+ * @note Logging is performed via qDebug/qCritical. This function does not
+ *       modify any external state.
+ */
+bool fuzzHttpParserOnly(const char *file_path) {
+  QHttpServerRequestFilter filter;
+  QHttpServerParser parser{QHostAddress{}, 8080, QHostAddress{}, 8080, &filter};
+
+  QFile f(file_path);
+  if (!f.open(QIODevice::ReadOnly))
+    return false;
+
+  // Inject raw bytes from file into a buffer
+  QByteArray byteArray = f.readAll();
+  QBuffer buffer{&byteArray};
+  if (!buffer.open(QBuffer::ReadOnly)) {
+    return false;
+  }
+
+  return parser.parse(&buffer);
+}
+
+/**
+ * @brief Fuzzes the header parser in isolation using with raw input bytes.
  *
  * This function creates a temporary QHttpHeaderParser instance and injects
  * the provided raw input data into it using a QBuffer. It allows testing
@@ -84,53 +106,39 @@ bool fuzzParserOnly(const uint8_t *data, size_t size) {
  *       using qDebug/qCritical, which can be enabled or disabled as needed.
  */
 bool fuzzHeaderParserOnly(const uint8_t *data, size_t size) {
-  if (size > std::numeric_limits<int>::max())
-    return false;
-
   QHttpHeaderParser parser;
-
   QByteArray byteArray(reinterpret_cast<const char *>(data),
                        static_cast<int>(size));
 
   // Directly pass a view of the data
-  bool result = parser.parseHeaders(QByteArrayView(byteArray));
-
-  if (!result) {
-    qDebug() << "Parser failed on input of size" << size;
-  }
-
-  return result;
+  return parser.parseHeaders(QByteArrayView(byteArray));
 }
 
 /**
- * @brief Fuzzes the QHttpServer parser with raw input read from a file.
+ * @brief Fuzzes the header parser in isolation using a file
  *
- * This function reads the entire content of the given file into a QBuffer
- * and feeds it to a temporary QHttpServerParser instance. It is useful
- * for fuzzing or testing the parser against stored input files.
+ * This function creates a temporary QHttpHeaderParser instance and injects
+ * the provided raw input data into it using a QBuffer. It allows testing
+ * the header parser in isolation from the full HTTP server, which is useful
+ * for fuzzing or unit testing malformed or unexpected HTTP header input.
  *
- * @param file_path Path to the file containing raw input bytes.
- * @return true if the parser successfully processed the input, false
- *         if parsing failed or the file/QBuffer could not be opened.
+ * @param file_path Path to the input file containing raw fuzz data.
  *
- * @note Logging is performed via qDebug/qCritical. This function does not
- *       modify any external state.
+ * @return `true` if parsing succeeded, `false` if parsing failed or the file
+ * could not be opened.
+ *
+ * @note This function does not modify any external state. Logging
+ *       is optional and can be enabled for debugging purposes.
  */
-bool fuzzParserOnly(const char *file_path) {
-  QHttpServerRequestFilter filter;
-  QHttpServerParser parser{QHostAddress{}, 8080, QHostAddress{}, 8080, &filter};
-
+bool fuzzHeaderParserOnly(const char *file_path) {
+  QHttpHeaderParser parser;
   QFile f(file_path);
   if (!f.open(QIODevice::ReadOnly))
     return false;
 
   // Inject raw bytes from file into a buffer
   QByteArray byteArray = f.readAll();
-  QBuffer buffer{&byteArray};
-  if (!buffer.open(QBuffer::ReadOnly)) {
-    qCritical() << "Failed to open QBuffer";
-    return false;
-  }
 
-  return parser.parse(&buffer);
+  // Directly pass a view of the data
+  return parser.parseHeaders(QByteArrayView(byteArray));
 }

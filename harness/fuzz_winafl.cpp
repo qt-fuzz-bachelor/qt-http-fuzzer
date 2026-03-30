@@ -2,18 +2,18 @@
 // SPDX-License-Identifier: MIT
 
 /**
- * @file fuzz_server_winafl.cpp
- * @brief WinAFL fuzzer entry point for black-box fuzz testing of the HTTP
- *        server.
+ * @file fuzz_parser_winafl.cpp
+ * @brief WinAFL fuzzing harness for isolated fuzzing of the HTTP parser.
  *
  * This translation unit provides a file-based fuzzing harness compatible with
  * Windows AFL or other custom fuzzing frameworks. It reads input from a file
- * and forwards it to the server's black-box fuzzing interface to stress-test
- * parsing, protocol handling, and internal state transitions.
+ * and forwards it to the isolated parser fuzzing interface to stress-test
+ * parsing logic.
  *
  * Optional looping mode allows repeated testing of the same input.
  */
 
+#include "parser_core.h"  // NOLINT(build/include_subdir)
 #include "server_core.h"  // NOLINT(build/include_subdir)
 #include <iostream>       // NOLINT(build/include_order)
 #include <windows.h>      // NOLINT(build/include_order)
@@ -22,7 +22,7 @@
  * @brief File-based fuzzing entry point.
  *
  * This function reads the fuzzed payload from a file and injects it into
- * the HTTP server black-box fuzzing interface.
+ * the selected fuzzing interface.
  *
  * @param f_path Path to the input file containing fuzzed data.
  *
@@ -33,7 +33,16 @@
  */
 extern "C" __declspec(dllexport) __declspec(noinline) int target(char *f_path) {
   // Inject the fuzzed payload to the HTTP server
+#ifdef FUZZ_HTTP_SERVER
   fuzzServerBlackbox(f_path);
+#elif defined(FUZZ_HTTP_PARSER)
+  fuzzHttpParserOnly(f_path);
+#elif defined(FUZZ_HEADER_PARSER)
+  fuzzHeaderParserOnly(f_path);
+#else
+#error "No fuzzing mode defined! Please define one of " \
+"FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
+#endif
   return 0;
 }
 

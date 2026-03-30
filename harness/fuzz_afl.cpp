@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 /**
- * @file fuzz_header_parser_afl.cpp
+ * @file fuzz_parser_afl.cpp
  * @brief AFL++ fuzzing harness for isolated fuzzing of the HTTP parser.
  *
  * This translation unit reads fuzzed input from standard input (`stdin`) and
@@ -15,22 +15,20 @@
  */
 
 #include "parser_core.h"  // NOLINT(build/include_subdir)
+#include "server_core.h"  // NOLINT(build/include_subdir)
 #include <unistd.h>       // NOLINT(build/include_order)
 
 /**
  * @brief AFL++ fuzzing main entry point.
  *
  * Reads up to 64 KiB of fuzzed data from `stdin` into a buffer and passes it
- * to the HTTP parser for isolated fuzzing. Empty inputs or inputs exceeding
+ * to the selected fuzzing interface. Empty inputs or inputs exceeding
  * 64 KiB are ignored.
  *
  * @return Always returns 0.
  *
  * @note The buffer `buf` is reused across AFL iterations. Each iteration is
  *       forked by AFL, ensuring no side effects between runs.
- * @note The fuzzing process directly targets the HTTP parser by passing the raw
- *       input data to `fuzzParserOnly`, isolating the parser from the full HTTP
- *       server stack for testing malformed or unexpected input.
  */
 int main() {
   __AFL_FUZZ_INIT();
@@ -43,8 +41,17 @@ int main() {
     if (len <= 0 || len > 64 * 1024)
       continue;
 
-    // Inject the fuzzed payload to the HeaderParser
+      // Inject the fuzzed payload to the HTTP server
+#ifdef FUZZ_HTTP_SERVER
+    fuzzServerBlackbox(buf, static_cast<size_t>(len));
+#elif defined(FUZZ_HTTP_PARSER)
+    fuzzHttpParserOnly(buf, static_cast<size_t>(len));
+#elif defined(FUZZ_HEADER_PARSER)
     fuzzHeaderParserOnly(buf, static_cast<size_t>(len));
+#else
+#error "No fuzzing mode defined! Please define one of " \
+       "FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
+#endif
   }
   return 0;
 }

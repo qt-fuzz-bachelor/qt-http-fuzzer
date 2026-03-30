@@ -14,6 +14,7 @@
  */
 
 #include "parser_core.h"  // NOLINT(build/include_subdir)
+#include "server_core.h"  // NOLINT(build/include_subdir)
 
 /**git
  * @brief libFuzzer test entry point.
@@ -26,7 +27,7 @@
  * - Empty inputs (no meaningful execution path)
  * - Oversized inputs (> 64 KiB) to prevent excessive memory consumption
  *
- * The remaining payload is forwarded to the http parser fuzzing interface.
+ * The remaining payload is forwarded to the selected fuzzing interface.
  *
  * @param data Pointer to the fuzzed input buffer (not null unless size == 0).
  * @param size Size of the fuzzed input buffer in bytes.
@@ -38,7 +39,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, const size_t size) {
   if (size == 0 || size > 64 * 1024)
     return 0;
 
-  // Inject the fuzzed payload to the HTTP parser
-  fuzzParserOnly(data, size);
+    // Inject the fuzzed payload to the HTTP parser
+#ifdef FUZZ_HTTP_SERVER
+  fuzzServerBlackbox(data, size);
+#elif defined(FUZZ_HTTP_PARSER)
+  fuzzHttpParserOnly(data, size);
+#elif defined(FUZZ_HEADER_PARSER)
+  fuzzHeaderParserOnly(data, size);
+#else
+#error "No fuzzing mode defined! Please define one of " \
+       "FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
+#endif
   return 0;
 }
