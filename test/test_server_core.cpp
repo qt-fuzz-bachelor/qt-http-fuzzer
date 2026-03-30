@@ -20,7 +20,6 @@ private slots:  // NOLINT(whitespace/indent)
   void testBasicHttpRequest();
   void testEmptyData();
   void testMalformedRequest();
-  void testNonExistentFile();
 };
 
 /**
@@ -73,5 +72,5 @@ void TestServerCore::testMalformedRequest() {
   QVERIFY(result);
 }
 
-QTEST_MAIN(TestServerCore);
+QTEST_APPLESS_MAIN(TestServerCore)
 #include "test_server_core.moc"
