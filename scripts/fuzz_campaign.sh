@@ -44,36 +44,35 @@ start_fuzzer() {
 
     if [[ "$TYPE" == "main" ]]; then
         screen -dmS "$NAME" bash -c "
-            exec env AFL_FINAL_SYNC=1 \
-                $ENVVARS \
-                afl-fuzz -M $NAME \
-                    -i $SEEDS \
-                    -o $OUTDIR \
-                    -x $DICT \
+            exec env AFL_FINAL_SYNC=1 $ENVVARS \
+                afl-fuzz -M \"$NAME\" \
+                    -i \"$SEEDS\" \
+                    -o \"$OUTDIR\" \
+                    -x \"$DICT\" \
                     $OPTIONS \
-                    $TARGET \
-                > $LOGFILE 2>&1
+                    \"$TARGET\" \
+                > \"$LOGFILE\" 2>&1
         "
     else
-        # ASAN handling
+        # ASAN builds require special handling
         if [[ "$TARGET" == *asan-build* ]]; then
             screen -dmS "$NAME" bash -c "
-                exec env  $ENVVARS \
+                exec env AFL_NO_UI=1 $ENVVARS \
                     sudo ./asan_limit.sh afl-fuzz -S \"$NAME\" \
-                        -i $SEEDS \
-                        -o $OUTDIR \
-                        -x $DICT \
+                        -i \"$SEEDS\" \
+                        -o \"$OUTDIR\" \
+                        -x \"$DICT\" \
                         $EXTRA \
                         $OPTIONS \
-                        $TARGET \
-                    > $LOGFILE 2>&1
+                        \"$TARGET\" \
+                    > \"$LOGFILE\" 2>&1
             "
         else
             screen -dmS "$NAME" bash -c "
-                exec env  $ENVVARS \
+                exec env AFL_NO_UI=1 $ENVVARS \
                     afl-fuzz -S \"$NAME\" \
-                        -i $SEEDS\" \
-                        -o $OUTDIR\" \
+                        -i \"$SEEDS\" \
+                        -o \"$OUTDIR\" \
                         -x \"$DICT\" \
                         $EXTRA \
                         $OPTIONS \
