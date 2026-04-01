@@ -57,7 +57,7 @@ start_fuzzer() {
         # ASAN builds require special handling
         if [[ "$TARGET" == *asan-build* ]]; then
             screen -dmS "$NAME" bash -c "
-                exec env AFL_NO_UI=1 $ENVVARS \
+                exec env $ENVVARS \
                     sudo ./asan_limit.sh afl-fuzz -S \"$NAME\" \
                         -i \"$SEEDS\" \
                         -o \"$OUTDIR\" \
@@ -69,7 +69,7 @@ start_fuzzer() {
             "
         else
             screen -dmS "$NAME" bash -c "
-                exec env AFL_NO_UI=1 $ENVVARS \
+                exec env $ENVVARS \
                     afl-fuzz -S \"$NAME\" \
                         -i \"$SEEDS\" \
                         -o \"$OUTDIR\" \
