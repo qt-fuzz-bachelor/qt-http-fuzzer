@@ -37,10 +37,10 @@ start_fuzzer() {
     local LOGFILE="$LOGDIR/${NAME}.log"
 
     # Send stats to server
-    ENVVARS+="AFL_STATSD=1"
-    ENVVARS+="AFL_STATSD_HOST=10.212.170.69"
-    ENVVARS+="AFL_STATSD_PORT=8125"
-    ENVVARS+="AFL_STATSD_TAGS_FLAVOR=dogstatsd"
+    ENVVARS+=" AFL_STATSD=1"
+    ENVVARS+=" AFL_STATSD_HOST=10.212.170.69"
+    ENVVARS+=" AFL_STATSD_PORT=8125"
+    ENVVARS+=" AFL_STATSD_TAGS_FLAVOR=dogstatsd"
 
     if [[ "$TYPE" == "main" ]]; then
         screen -dmS "$NAME" bash -c "
