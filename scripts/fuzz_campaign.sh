@@ -21,6 +21,7 @@ fi
 
 SEEDS="$HOME/qt-http-fuzzer/corpus"
 DICT="$HOME/qt-http-fuzzer/wordlist/http.afl.dict"
+sudo sh -c 'echo core > /proc/sys/kernel/core_pattern'
 
 # Function to start a fuzzer node
 start_fuzzer() {
