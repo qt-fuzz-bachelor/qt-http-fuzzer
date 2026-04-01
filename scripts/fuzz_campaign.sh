@@ -22,10 +22,7 @@ fi
 SEEDS="$HOME/qt-http-fuzzer/corpus"
 DICT="$HOME/qt-http-fuzzer/wordlist/http.afl.dict"
 
-LOGDIR="$OUTDIR/logs"
-mkdir -p "$OUTDIR" "$LOGDIR"
-
-# Launch helper to start a fuzzer node
+# Function to start a fuzzer node
 start_fuzzer() {
     local TYPE="$1"
     local NAME="$2"
@@ -33,8 +30,6 @@ start_fuzzer() {
     local ENVVARS="$4"
     local EXTRA="$5"
     local OPTIONS="$6"
-
-    local LOGFILE="$LOGDIR/${NAME}.log"
 
     # Send stats to server
     ENVVARS+=" AFL_STATSD=1"
@@ -44,17 +39,17 @@ start_fuzzer() {
 
     if [[ "$TYPE" == "main" ]]; then
         screen -dmS "$NAME" bash -c "
-            exec env AFL_FINAL_SYNC=1 $ENVVARS \
+            exec env AFL_FINAL_SYNC=1 \
+                $ENVVARS \
                 afl-fuzz -M \"$NAME\" \
                     -i \"$SEEDS\" \
                     -o \"$OUTDIR\" \
                     -x \"$DICT\" \
                     $OPTIONS \
-                    \"$TARGET\" \
-                > \"$LOGFILE\" 2>&1
+                    \"$TARGET\"
         "
     else
-        # ASAN builds require special handling
+        # ASAN handling
         if [[ "$TARGET" == *asan-build* ]]; then
             screen -dmS "$NAME" bash -c "
                 exec env $ENVVARS \
@@ -64,8 +59,7 @@ start_fuzzer() {
                         -x \"$DICT\" \
                         $EXTRA \
                         $OPTIONS \
-                        \"$TARGET\" \
-                    > \"$LOGFILE\" 2>&1
+                        \"$TARGET\"
             "
         else
             screen -dmS "$NAME" bash -c "
@@ -76,8 +70,7 @@ start_fuzzer() {
                         -x \"$DICT\" \
                         $EXTRA \
                         $OPTIONS \
-                        \"$TARGET\" \
-                    > \"$LOGFILE\" 2>&1
+                        \"$TARGET\"
             "
         fi
     fi
@@ -85,7 +78,6 @@ start_fuzzer() {
 
 # Start main fuzzer
 MAIN_NAME="$BINARY-main"
-
 echo "[*] Starting main: $MAIN_NAME"
 
 start_fuzzer "main" \
@@ -93,8 +85,7 @@ start_fuzzer "main" \
     "$HOME/qt-http-fuzzer/afl-build/harness/$BINARY" \
     "" "" ""
 
-
-# Function to start a fuzzer node
+# Start secondary fuzzers
 for i in $(seq 1 $((NUM_NODES - 1))); do
     NAME="$BINARY-$i"
 
@@ -142,8 +133,5 @@ for i in $(seq 1 $((NUM_NODES - 1))); do
     start_fuzzer "secondary" "$NAME" "$TARGET" "$ENVVARS" "$EXTRA" "$OPTIONS"
 done
 
-echo "[*] All fuzzers started."
-echo "[?] Logs:    $LOGDIR"
-echo "[?] Example: tail -f $LOGDIR/${MAIN_NAME}.log"
-echo "[?] Attach:  screen -r ${MAIN_NAME}"
 wait
+echo "[*] All fuzzers started."
