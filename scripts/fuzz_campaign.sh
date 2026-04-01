@@ -103,6 +103,12 @@ for i in $(seq 1 $((NUM_NODES - 1))); do
     EXTRA=""
     TARGET=""
 
+    THRESHOLD=$(( NUM_NODES * 30 / 100 ))
+    if (( i >= THRESHOLD )); then
+        ENVVARS+=" AFL_CUSTOM_MUTATOR_LIBRARY=\"$HOME/Grammar-Mutator/libgrammarmutator-http.so\""
+        ENVVARS+=" AFL_CUSTOM_MUTATOR_ONLY=1"
+    fi
+
     # Randomly apply variants
     case $((i % 4)) in
         0) OPTIONS="-Z" ;;
