@@ -11,12 +11,6 @@ enable_testing()
 
 # ---- Fuzzing engine selection ----
 set(FUZZER_ENGINE "" CACHE STRING "Choose fuzzing engine")
-# ---- Optional features ----
-option(HEADER "Enable header-based fuzzing harness" OFF) # Enable with -DHEADER=ON
-
-if(HEADER)
-    message(STATUS "HEADER mode enabled")
-endif()
 
 if(WIN32)
     if(NOT FUZZER_ENGINE)
