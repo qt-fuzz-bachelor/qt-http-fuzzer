@@ -17,7 +17,9 @@ class TestParserCore : public QObject {
 private slots:  // NOLINT(whitespace/indent)
   void testValidHttpRequestBytes();
   void testMustFail();
-  void testRandome();
+  void testJunk();
+  void testCrashFiles_data();
+  static void testCrashFiles();
 };
 
 /**
@@ -54,11 +56,37 @@ void TestParserCore::testMustFail() {
  *  The parser returns true and does not encounter
  *  a condition it classifies as an error.
  */
-void TestParserCore::testRandome() {
+void TestParserCore::testJunk() {
   const char *httpRequest = "42123456789abcdHEIPÅDEG";
 
   const bool result = fuzzHttpParserOnly(
       reinterpret_cast<const uint8_t *>(httpRequest), std::strlen(httpRequest));
+
+  QVERIFY(result);
+}
+
+void TestParserCore::testCrashFiles_data() {
+  QTest::addColumn<QByteArray>("request");
+
+  QDir dir(QString(SRCDIR) + "/crashes");
+
+  for (const QString &fileName : dir.entryList(QDir::Files)) {
+    QFile file(dir.filePath(fileName));
+    if (!file.open(QIODevice::ReadOnly))
+      continue;
+
+    QByteArray data = file.readAll();
+
+    // Each file becomes its own row in the test
+    QTest::newRow(fileName.toUtf8().constData()) << data;
+  }
+}
+
+void TestParserCore::testCrashFiles() {
+  QFETCH(QByteArray, request);
+
+  bool result = fuzzHttpParserOnly(
+      reinterpret_cast<const uint8_t *>(request.constData()), request.size());
 
   QVERIFY(result);
 }

@@ -19,6 +19,8 @@ private slots:  // NOLINT(whitespace/indent)
   void testBasicHttpRequest();
   void testEmptyData();
   void testMalformedRequest();
+  void testCrashFiles();
+  void testCrashFiles_data();
 };
 
 /**
@@ -68,6 +70,32 @@ void TestServerCore::testMalformedRequest() {
   bool result =
       fuzzServerBlackbox(reinterpret_cast<const uint8_t *>(malformedRequest),
                          strlen(malformedRequest));
+  QVERIFY(result);
+}
+
+void TestServerCore::testCrashFiles_data() {
+  QTest::addColumn<QByteArray>("request");
+
+  QDir dir(QString(SRCDIR) + "/crashes");
+
+  for (const QString &fileName : dir.entryList(QDir::Files)) {
+    QFile file(dir.filePath(fileName));
+    if (!file.open(QIODevice::ReadOnly))
+      continue;
+
+    QByteArray data = file.readAll();
+
+    // Each file becomes its own row in the test
+    QTest::newRow(fileName.toUtf8().constData()) << data;
+  }
+}
+
+void TestServerCore::testCrashFiles() {
+  QFETCH(QByteArray, request);
+
+  bool result = fuzzServerBlackbox(
+      reinterpret_cast<const uint8_t *>(request.constData()), request.size());
+
   QVERIFY(result);
 }
 
