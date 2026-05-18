@@ -1,19 +1,27 @@
-//
 // Copyright (c) 2026 T.W. Skårer, J.F. Wilvang, S. Thire
 // SPDX-License-Identifier: MIT
-//
-// Testing Server Core
-//
+
+/**
+ * @file test_server_core.cpp
+ * @brief Unit and fuzz tests for the HTTP server core.
+ *
+ * This file contains Qt test cases for validating HTTP server behavior in
+ * isolation. It covers basic request handling, malformed input, edge cases, and
+ * testing using previously discovered crash-inducing inputs.
+ *
+ * Tests operate via fuzzServerBlackbox() without requiring a real network
+ * setup.
+ */
+
+#include <QObject>
+#include <QString>
+#include <QtTest/QTest>
 
 #include "server_core.h"  // NOLINT(build/include_subdir)
-#include <QObject>        // NOLINT(build/include_order)
-#include <QString>        // NOLINT(build/include_order)
-#include <QtTest/QTest>   // NOLINT(build/include_order)
 
 class TestServerCore : public QObject {
   Q_OBJECT
 
-  // Tells Qt it is a signal/slot mechanism
 private slots:  // NOLINT(whitespace/indent)
   void testServerInitialization();
   void testBasicHttpRequest();
@@ -24,24 +32,26 @@ private slots:  // NOLINT(whitespace/indent)
 };
 
 /**
- * @brief Tests that the server initializes and accepts connections.
+ * @brief Verifies that the server accepts an initial connection request.
  *
- * Verifies the server starts up correctly by sending a minimal request.
- * This ensures the server is actually listening and can receive data.
+ * This test sends a minimal input ("GET") to confirm that the server is running
+ * and able to receive incoming data.
  */
 void TestServerCore::testServerInitialization() {
   const char *minimalRequest = "GET";
+
   bool result =
       fuzzServerBlackbox(reinterpret_cast<const uint8_t *>(minimalRequest),
                          strlen(minimalRequest));
+
   QVERIFY(result);
 }
 
 /**
- * @brief Tests the server with a complete HTTP GET request.
+ * @brief Validates handling of a well-formed HTTP GET request.
  *
- * Sends a properly formatted HTTP request to verify the server
- * can handle valid HTTP protocol messages.
+ * This test sends a complete HTTP/1.1 request and verifies that the server
+ * correctly processes standard valid input.
  */
 void TestServerCore::testBasicHttpRequest() {
   const char *httpRequest = "GET / HTTP/1.1\r\n"
@@ -55,24 +65,39 @@ void TestServerCore::testBasicHttpRequest() {
 }
 
 /**
- * @brief Tests the server with nullptr input.
+ * @brief Ensures the server handles empty input safely.
  *
- * Verifies the server handles edge cases gracefully without crashing.
- * Empty data should still return true (connection succeeded even if no data).
+ * This test provides a null pointer and zero-length input to verify that the
+ * server does not crash and handles empty requests gracefully.
  */
 void TestServerCore::testEmptyData() {
   bool result = fuzzServerBlackbox(nullptr, 0);
   QVERIFY(result);
 }
 
+/**
+ * @brief Tests server robustness against malformed HTTP input.
+ *
+ * This test sends a deliberately invalid request format to verify that the
+ * server can handle corrupted or non-standard input without failure.
+ */
 void TestServerCore::testMalformedRequest() {
   const char *malformedRequest = "GET\r\n\r\nHTTP/42\r\n";
+
   bool result =
       fuzzServerBlackbox(reinterpret_cast<const uint8_t *>(malformedRequest),
                          strlen(malformedRequest));
+
   QVERIFY(result);
 }
 
+/**
+ * @brief Loads and tests previously discovered crash-inducing inputs.
+ *
+ * This data-driven test reads input files from the `crashes` directory and
+ * feeds each one into the server. It ensures regression stability and prevents
+ * reintroduction of known failure cases.
+ */
 void TestServerCore::testCrashFiles_data() {
   QTest::addColumn<QByteArray>("request");
 
@@ -85,11 +110,16 @@ void TestServerCore::testCrashFiles_data() {
 
     QByteArray data = file.readAll();
 
-    // Each file becomes its own row in the test
     QTest::newRow(fileName.toUtf8().constData()) << data;
   }
 }
 
+/**
+ * @brief Executes regression tests using stored crash inputs.
+ *
+ * Each input from the crash corpus is passed to the server to ensure it remains
+ * stable and does not crash on previously problematic data.
+ */
 void TestServerCore::testCrashFiles() {
   QFETCH(QByteArray, request);
 
