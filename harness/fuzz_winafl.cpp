@@ -33,15 +33,12 @@
  */
 extern "C" __declspec(dllexport) __declspec(noinline) int target(char *f_path) {
   // Inject the fuzzed payload to the HTTP server
-#ifdef FUZZ_HTTP_SERVER
+#if defined(FUZZ_HTTP_SERVER)
   fuzzServerBlackbox(f_path);
 #elif defined(FUZZ_HTTP_PARSER)
   fuzzHttpParserOnly(f_path);
 #elif defined(FUZZ_HEADER_PARSER)
   fuzzHeaderParserOnly(f_path);
-#else
-#error "No fuzzing mode defined! Please define one of " \
-       "FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
 #endif
   return 0;
 }

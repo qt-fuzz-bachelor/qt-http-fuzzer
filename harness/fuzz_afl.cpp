@@ -42,15 +42,12 @@ int main() {
       continue;
 
       // Inject the fuzzed payload to the HTTP server
-#ifdef FUZZ_HTTP_SERVER
+#if defined(FUZZ_HTTP_SERVER)
     fuzzServerBlackbox(buf, static_cast<size_t>(len));
 #elif defined(FUZZ_HTTP_PARSER)
     fuzzHttpParserOnly(buf, static_cast<size_t>(len));
 #elif defined(FUZZ_HEADER_PARSER)
     fuzzHeaderParserOnly(buf, static_cast<size_t>(len));
-#else
-#error "No fuzzing mode defined! Please define one of " \
-       "FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
 #endif
   }
   return 0;
