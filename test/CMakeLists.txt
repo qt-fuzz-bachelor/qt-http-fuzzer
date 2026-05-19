@@ -1,36 +1,31 @@
-find_package(Qt6 REQUIRED COMPONENTS Test Network HttpServer)
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core HttpServer HttpServerPrivate)
+find_package(Qt6 6.5 REQUIRED COMPONENTS
+        Core
+        Network
+        Test
+        HttpServer
+        HttpServerPrivate
+)
 
 set(CMAKE_AUTOMOC ON)
 
-target_link_libraries(${test_server_runner}  fuzzer_core)
+function(add_qt_test name source)
+    add_executable(${name} ${source})
 
-add_executable(test_server_runner
-        test_server_core.cpp
-)
+    target_link_libraries(${name} PRIVATE
+            Qt6::Core
+            Qt6::Network
+            Qt6::HttpServer
+            Qt6::HttpServerPrivate
+            Qt6::Test
+            fuzzer_core
+    )
 
-target_link_libraries(test_server_runner
-        Qt6::Core
-        Qt6::Network
-        Qt6::HttpServer
-        Qt6::HttpServerPrivate
-        Qt6::Test
-        fuzzer_core
-)
+    target_compile_definitions(${name} PRIVATE
+            SRCDIR="${CMAKE_SOURCE_DIR}"
+    )
 
-add_test(NAME test_server_runner COMMAND test_server_runner)
+    add_test(NAME ${name} COMMAND ${name})
+endfunction()
 
-add_executable(test_parser_core
-        test_parser_core.cpp
-)
-
-target_link_libraries(test_parser_core PRIVATE
-        Qt6::Core
-        Qt6::Network
-        Qt6::HttpServer
-        Qt6::HttpServerPrivate
-        Qt6::Test
-        fuzzer_core
-)
-
-add_test(NAME test_parser_core COMMAND test_parser_core)
+add_qt_test(test_server test_server_core.cpp)
+add_qt_test(test_parser test_parser_core.cpp)

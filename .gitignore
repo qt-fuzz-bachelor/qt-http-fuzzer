@@ -3,6 +3,7 @@ cmake-build-*/
 build-*/
 debug-*/
 release-*/
+Testing/
 
 # Qt Creator files
 *.pro.user

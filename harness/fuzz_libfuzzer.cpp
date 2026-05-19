@@ -40,15 +40,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, const size_t size) {
     return 0;
 
     // Inject the fuzzed payload to the HTTP parser
-#ifdef FUZZ_HTTP_SERVER
+#if defined(FUZZ_HTTP_SERVER)
   fuzzServerBlackbox(data, size);
 #elif defined(FUZZ_HTTP_PARSER)
   fuzzHttpParserOnly(data, size);
 #elif defined(FUZZ_HEADER_PARSER)
   fuzzHeaderParserOnly(data, size);
-#else
-#error "No fuzzing mode defined! Please define one of " \
-       "FUZZ_HTTP_SERVER, FUZZ_HTTP_PARSER, FUZZ_HEADER_PARSER"
 #endif
   return 0;
 }
