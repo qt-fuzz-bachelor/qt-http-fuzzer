@@ -90,7 +90,8 @@ void TestParserCore::testJunk() {
 void TestParserCore::testCrashFiles_data() {
   QTest::addColumn<QByteArray>("request");
 
-  QDir dir(QString(SRCDIR) + "/crashes");
+  QDir dir(QString(SRCDIR));
+  dir.cd("crashes");
 
   for (const QString &fileName : dir.entryList(QDir::Files)) {
     QFile file(dir.filePath(fileName));
