@@ -8,6 +8,7 @@ This project implements a fuzzing framework for `QHttpServer` that exercises the
    * [Linux](#linux)
    * [macos](#macos)
    * [windows](#windows)
+* [Grafana Dashboards](#grafana-dashboards)
 * [Internal Practices](#internal-practices)
 
 
@@ -395,6 +396,14 @@ afl-fuzz.exe ^
 * WinAFL: [WinAFL GitHub Repository](https://github.com/googleprojectzero/winafl?utm_source=chatgpt.com)
 * DynamoRIO: [DynamoRIO Website](https://dynamorio.org?utm_source=chatgpt.com)
 
+
+
+## Grafana Dashboards
+
+This project includes Grafana dashboards for visualizing AFL fuzzing performance metrics such as execution rate, coverage signals, and crashes.
+
+The monitoring stack is based on Prometheus and StatsD.
+Full setup guide is found in [STATS.md](dashboard/STATS.md).
 
 ## Internal practices
 
