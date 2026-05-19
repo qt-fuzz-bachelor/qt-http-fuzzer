@@ -1,0 +1,186 @@
+{
+  "title": "AFL Fuzzing Metrics",
+  "uid": "sRI6PCfGz",
+  "version": 11,
+  "timezone": "browser",
+  "time": {
+    "from": "2026-05-05T05:51:10.128Z",
+    "to": "2026-06-15T02:06:04.033Z"
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Core Fuzzing Metrics",
+      "id": 16,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
+    },
+
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Cumulative Execs/s",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 1 },
+      "targets": [
+        {
+          "expr": "sum(fuzzing{type=\"execs_per_sec\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"execs_per_sec\", banner=~\"fuzz_header_afl.*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"execs_per_sec\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    },
+
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Total Crashes",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 1 },
+      "targets": [
+        {
+          "expr": "sum(fuzzing{type=\"total_crashes\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"total_crashes\", banner=~\"fuzz_header_afl.*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"total_crashes\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    },
+
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Unique Crashes",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 7 },
+      "targets": [
+        {
+          "expr": "sum(fuzzing{type=\"saved_crashes\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"saved_crashes\", banner=~\"fuzz_header_afl.*\", banner!~\".*-(16|23).*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"saved_crashes\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    },
+
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "Unique Hangs",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 7 },
+      "targets": [
+        {
+          "expr": "sum(fuzzing{type=\"saved_hangs\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"saved_hangs\", banner=~\"fuzz_header_afl.*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"saved_hangs\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    },
+
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Cycles Done",
+      "gridPos": { "h": 5, "w": 8, "x": 0, "y": 13 },
+      "targets": [
+        {
+          "expr": "sum(fuzzing{type=\"cycle_done\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"cycle_done\", banner=~\"fuzz_header_afl.*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"cycle_done\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    },
+
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Total Execs",
+      "gridPos": { "h": 5, "w": 8, "x": 8, "y": 13 },
+      "targets": [
+        {
+          "expr": "sum(fuzzing{type=\"execs_done\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"execs_done\", banner=~\"fuzz_header_afl.*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"execs_done\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    },
+
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Cycles Without Finds",
+      "gridPos": { "h": 5, "w": 8, "x": 16, "y": 13 },
+      "targets": [
+        {
+          "expr": "sum(fuzzing{type=\"cycles_wo_finds\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"cycles_wo_finds\", banner=~\"fuzz_header_afl.*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "sum(fuzzing{type=\"cycles_wo_finds\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    },
+
+    {
+      "id": 24,
+      "type": "timeseries",
+      "title": "Corpus Count",
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 18 },
+      "targets": [
+        {
+          "expr": "max(fuzzing{type=\"corpus_imported\", banner=~\"fuzz_parser_afl.*\"})",
+          "legendFormat": "parser"
+        },
+        {
+          "expr": "max(fuzzing{type=\"corpus_imported\", banner=~\"fuzz_header_afl.*\"})",
+          "legendFormat": "header"
+        },
+        {
+          "expr": "max(fuzzing{type=\"corpus_imported\", banner=~\"fuzz_server_afl.*\"})",
+          "legendFormat": "server"
+        }
+      ]
+    }
+  ]
+}
